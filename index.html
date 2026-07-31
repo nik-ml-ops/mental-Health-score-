@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mental Health Signal — Student Wellness Analytics</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<div class="noise-overlay" aria-hidden="true"></div>
+
+<header class="site-header">
+  <div class="header-inner">
+    <span class="eyebrow">Student Wellness Analytics</span>
+    <h1 class="title">Mental Health <em>Signal</em></h1>
+    <p class="subtitle">A quick read on how habits, screen time, and stress are trending — modeled from your daily rhythm, not a diagnosis.</p>
+  </div>
+</header>
+
+<main class="layout">
+
+  <!-- FORM PANEL -->
+  <section class="panel form-panel">
+    <form id="predict-form" novalidate>
+      <!-- Profile -->
+      <fieldset class="group">
+        <legend><span class="legend-index">01</span> Profile</legend>
+        <div class="grid grid-3">
+          <div class="field">
+            <label for="age">Age</label>
+            <input type="number" id="age" name="age" min="10" max="100" step="1" required placeholder="e.g. 21" />
+            <span class="hint">10–100</span>
+            <span class="error-msg"></span>
+          </div>
+          <div class="field">
+            <label for="gender">Gender</label>
+            <select id="gender" name="gender" required>
+              <option value="" disabled selected hidden>Select</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+            </select>
+            <span class="error-msg"></span>
+          </div>
+          <div class="field">
+            <label for="country">Country</label>
+            <input type="text" id="country" name="country" list="country-list" required placeholder="e.g. India" autocomplete="off" />
+            <datalist id="country-list">
+              <option value="India"></option>
+              <option value="USA"></option>
+              <option value="Canada"></option>
+              <option value="Australia"></option>
+              <option value="UK"></option>
+              <option value="Germany"></option>
+              <option value="Mexico"></option>
+              <option value="Turkey"></option>
+              <option value="France"></option>
+              <option value="Other"></option>
+            </datalist>
+            <span class="hint">Not listed? Type it anyway.</span>
+            <span class="error-msg"></span>
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- Academic & Digital Habits -->
+      <fieldset class="group">
+        <legend><span class="legend-index">02</span> Academic &amp; Digital Habits</legend>
+        <div class="grid grid-2">
+          <div class="field">
+            <label for="academic_level">Academic level</label>
+            <select id="academic_level" name="academic_level" required>
+              <option value="" disabled selected hidden>Select</option>
+              <option value="High School">High School</option>
+              <option value="Undergraduate">Undergraduate</option>
+              <option value="Graduate">Graduate</option>
+              <option value="Postgraduate">Postgraduate</option>
+            </select>
+            <span class="error-msg"></span>
+          </div>
+          <div class="field">
+            <label for="most_used_platform">Most-used platform</label>
+            <select id="most_used_platform" name="most_used_platform" required>
+              <option value="" disabled selected hidden>Select</option>
+              <option value="Instagram">Instagram</option>
+              <option value="Facebook">Facebook</option>
+              <option value="Twitter">Twitter</option>
+              <option value="Snapchat">Snapchat</option>
+              <option value="TikTok">TikTok</option>
+              <option value="YouTube">YouTube</option>
+              <option value="Reddit">Reddit</option>
+              <option value="Telegram">Telegram</option>
+              <option value="Other">Other</option>
+            </select>
+            <span class="error-msg"></span>
+          </div>
+          <div class="field">
+            <label for="purpose_of_use">Primary purpose</label>
+            <select id="purpose_of_use" name="purpose_of_use" required>
+              <option value="" disabled selected hidden>Select</option>
+              <option value="Socializing">Socializing</option>
+              <option value="Entertainment">Entertainment</option>
+              <option value="Education">Education</option>
+              <option value="News">News</option>
+              <option value="Shopping">Shopping</option>
+              <option value="Other">Other</option>
+            </select>
+            <span class="error-msg"></span>
+          </div>
+          <div class="field">
+            <label for="avg_daily_usage_hours">Avg. daily screen time</label>
+            <div class="unit-input">
+              <input type="number" id="avg_daily_usage_hours" name="avg_daily_usage_hours" min="0" max="24" step="0.1" required placeholder="0.0" />
+              <span class="unit">hrs</span>
+            </div>
+            <span class="error-msg"></span>
+          </div>
+          <div class="field">
+            <label for="daily_unlocks">Daily phone unlocks</label>
+            <input type="number" id="daily_unlocks" name="daily_unlocks" min="0" step="1" required placeholder="e.g. 60" />
+            <span class="error-msg"></span>
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- Lifestyle & Stress -->
+      <fieldset class="group">
+        <legend><span class="legend-index">03</span> Lifestyle &amp; Stress</legend>
+        <div class="grid grid-3">
+          <div class="field">
+            <label for="study_hours">Study hours / day</label>
+            <div class="unit-input">
+              <input type="number" id="study_hours" name="study_hours" min="0" max="24" step="0.1" required placeholder="0.0" />
+              <span class="unit">hrs</span>
+            </div>
+            <span class="error-msg"></span>
+          </div>
+          <div class="field">
+            <label for="physical_activity_hours">Physical activity / day</label>
+            <div class="unit-input">
+              <input type="number" id="physical_activity_hours" name="physical_activity_hours" min="0" max="24" step="0.1" required placeholder="0.0" />
+              <span class="unit">hrs</span>
+            </div>
+            <span class="error-msg"></span>
+          </div>
+          <div class="field">
+            <label for="sleep_hours_per_night">Sleep / night</label>
+            <div class="unit-input">
+              <input type="number" id="sleep_hours_per_night" name="sleep_hours_per_night" min="0" max="24" step="0.1" required placeholder="0.0" />
+              <span class="unit">hrs</span>
+            </div>
+            <span class="error-msg"></span>
+          </div>
+          <div class="field field-span">
+            <label for="stress_level">Perceived stress level</label>
+            <div class="segmented" id="stress_level_group">
+              <button type="button" class="seg-btn" data-value="Low">Low</button>
+              <button type="button" class="seg-btn" data-value="Medium">Medium</button>
+              <button type="button" class="seg-btn" data-value="High">High</button>
+              <button type="button" class="seg-btn" data-value="Very High">Very High</button>
+            </div>
+            <input type="hidden" id="stress_level" name="stress_level" required />
+            <span class="error-msg"></span>
+          </div>
+        </div>
+      </fieldset>
+
+      <div class="form-footer">
+        <p class="api-note">API Baseline Local Endpoint: <code>:2201/predict</code></p>
+        <div>
+          <button type="button" id="reset-btn" class="seg-btn" style="margin-right: 8px;">Reset</button>
+          <button type="submit" id="submit-btn" class="submit-btn">
+            <span class="btn-spinner"></span>
+            <span class="btn-label">Analyze Habits</span>
+          </button>
+        </div>
+      </div>
+    </form>
+  </section>
+
+  <!-- RESULT PANEL -->
+  <section class="panel result-panel" aria-live="polite">
+    <div class="result-inner">
+      <div id="state-idle" class="status-state">
+        <h3>Awaiting Input</h3>
+        <p>Fill out your metrics on the left and run analysis to see a quick wellness signal.</p>
+      </div>
+
+      <div id="state-loading" class="status-state" hidden>
+        <h3>Analyzing your habits…</h3>
+        <p>Connecting to the local prediction API and calculating the signal.</p>
+      </div>
+
+      <div id="state-result" class="status-state" hidden>
+        <div class="gauge-shell">
+          <svg class="gauge" viewBox="0 0 240 180" role="img" aria-label="Wellness score gauge">
+            <circle class="gauge-track" cx="120" cy="140" r="100"></circle>
+            <circle id="gauge-fill" class="gauge-fill" cx="120" cy="140" r="100"></circle>
+            <g class="gauge-ticks"></g>
+          </svg>
+          <div class="gauge-value">
+            <div id="score-number">0.0</div>
+            <div id="score-band">Signal: balanced</div>
+          </div>
+        </div>
+        <p id="score-context" class="result-context"></p>
+      </div>
+
+      <div id="state-error" class="status-state" hidden>
+        <h3>Prediction unavailable</h3>
+        <p id="error-label">The API could not be reached.</p>
+        <p id="error-copy" class="result-context">Please make sure the local server is running on port 2200.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script src="script.js"></script>
+</body>
+</html>
