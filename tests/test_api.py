@@ -2,10 +2,28 @@ import importlib.util
 import os
 import sys
 
+from fastapi.testclient import TestClient
+
 ROOT = os.path.dirname(os.path.dirname(__file__))
 sys.path.insert(0, ROOT)
 
 import main
+
+
+def test_root_serves_the_web_app():
+    client = TestClient(main.app)
+    response = client.get("/")
+
+    assert response.status_code == 200
+    assert "Mental Health Signal" in response.text
+
+
+def test_health_endpoint_is_available():
+    client = TestClient(main.app)
+    response = client.get("/health")
+
+    assert response.status_code == 200
+    assert response.json()["status"] == "ok"
 
 
 def test_predict_endpoint_uses_model():

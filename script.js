@@ -1,7 +1,23 @@
 (() => {
   "use strict";
 
-  const API_BASE = "http://127.0.0.1:2200";
+  const DEFAULT_API_BASE = "http://127.0.0.1:2200";
+
+  async function getApiBase() {
+    const candidates = ["", window.location.origin, DEFAULT_API_BASE];
+    const uniqueCandidates = [...new Set(candidates.filter(Boolean))];
+
+    for (const base of uniqueCandidates) {
+      try {
+        const response = await fetch(`${base}/health`, { cache: "no-store", mode: "cors" });
+        if (response.ok) return base;
+      } catch (error) {
+        // Keep trying the next candidate.
+      }
+    }
+
+    return uniqueCandidates[0] || "";
+  }
 
   const form = document.getElementById("predict-form");
   const submitBtn = document.getElementById("submit-btn");
@@ -207,7 +223,8 @@
   // Submit prediction request to local API
   // ---------------------------------------------------------
   async function submitPrediction(payload) {
-    const response = await fetch(`${API_BASE}/predict`, {
+    const apiBase = await getApiBase();
+    const response = await fetch(`${apiBase}/predict`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),

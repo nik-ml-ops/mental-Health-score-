@@ -1,13 +1,15 @@
 import os
 import pickle
+from pathlib import Path
 from typing import Any, Dict, List
 
 import joblib
 import numpy as np
 import pandas as pd
 import uvicorn
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Response
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
@@ -103,9 +105,26 @@ def predict(payload: Dict[str, Any]) -> Dict[str, Any]:
     return {"score": round(score, 2), "band": band}
 
 
+ROOT_DIR = Path(__file__).resolve().parent
+INDEX_PATH = ROOT_DIR / "index.html"
+STATIC_FILES = ["style.css", "script.js"]
+
+
 @app.get("/")
+def index() -> Response:
+    return FileResponse(INDEX_PATH)
+
+
+@app.get("/health")
 def health() -> Dict[str, str]:
     return {"status": "ok"}
+
+
+@app.get("/{filename}")
+def serve_static(filename: str) -> Response:
+    if filename in STATIC_FILES:
+        return FileResponse(ROOT_DIR / filename)
+    raise HTTPException(status_code=404, detail="Not found")
 
 
 @app.post("/predict")
