@@ -5,6 +5,7 @@ from typing import Any, Dict, List
 import joblib
 import numpy as np
 import pandas as pd
+import uvicorn
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -113,3 +114,7 @@ def predict_endpoint(payload: StudentPayload) -> Dict[str, Any]:
         return predict(payload.model_dump())
     except Exception as exc:
         return {"error": True, "detail": str(exc)}
+
+
+if __name__ == "__main__":
+    uvicorn.run("main:app", host="127.0.0.1", port=2200, log_level="info")
