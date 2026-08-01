@@ -1,7 +1,7 @@
 (() => {
   "use strict";
 
-  const DEFAULT_API_BASE = "http://127.0.0.1:2200";
+  const DEFAULT_API_BASE = "https://mental-health-score-abz4.onrender.com";
 
   async function getApiBase() {
     const candidates = ["", window.location.origin, DEFAULT_API_BASE];
