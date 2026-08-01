@@ -1,7 +1,7 @@
 (() => {
   "use strict";
 
-  const DEFAULT_API_BASE = "https://mental-health-score-abz4.onrender.com";
+  const DEFAULT_API_BASE = "https://mental-health-score-2-cx5v.onrender.com";
 
   async function getApiBase() {
     const candidates = ["", window.location.origin, DEFAULT_API_BASE];
