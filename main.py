@@ -14,6 +14,8 @@ from pydantic import BaseModel
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 MODEL_PATH = os.path.join(ROOT, "Mental_Health_Model.pkl")
+HOST = os.environ.get("HOST", "0.0.0.0")
+PORT = int(os.environ.get("PORT", "2200"))
 
 app = FastAPI(title="Mental Health Prediction API", version="1.0.0")
 app.add_middleware(
@@ -187,4 +189,4 @@ def predict_endpoint(payload: StudentPayload) -> Dict[str, Any]:
 
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="127.0.0.1", port=2200, log_level="info")
+    uvicorn.run("main:app", host=HOST, port=PORT, log_level="info")
