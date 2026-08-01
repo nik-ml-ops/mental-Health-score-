@@ -46,3 +46,30 @@ def test_predict_endpoint_uses_model():
     assert result["score"] >= 0
     assert result["score"] <= 10
     assert result["band"] in {"strained", "balanced", "resilient"}
+
+
+def test_predict_falls_back_when_model_is_unavailable(monkeypatch):
+    def broken_load_model():
+        raise FileNotFoundError("model missing")
+
+    monkeypatch.setattr(main, "load_model", broken_load_model)
+
+    payload = {
+        "Age": 20,
+        "Gender": "Female",
+        "Country": "USA",
+        "Academic_Level": "Undergraduate",
+        "Most_Used_Platform": "TikTok",
+        "Purpose_Of_Use": "Entertainment",
+        "Avg_Daily_Usage_Hours": 6.0,
+        "Daily_Unlocks": 150,
+        "Study_Hours": 3.0,
+        "Physical_Activity_Hours": 1.0,
+        "Sleep_Hours_Per_Night": 5.5,
+        "Stress_Level": "High",
+    }
+
+    result = main.predict(payload)
+    assert result["score"] >= 0
+    assert result["score"] <= 10
+    assert result["band"] in {"strained", "balanced", "resilient"}

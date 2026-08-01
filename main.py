@@ -89,12 +89,51 @@ def _build_feature_frame(payload: Dict[str, Any]) -> pd.DataFrame:
     return frame
 
 
-def predict(payload: Dict[str, Any]) -> Dict[str, Any]:
-    model = load_model()
-    frame = _build_feature_frame(payload)
-    prediction = model.predict(frame)[0]
+def _fallback_score(payload: Dict[str, Any]) -> float:
+    coerced = _coerce_payload(payload)
+    stress = str(coerced.get("Stress_Level", "")).strip().lower()
+    sleep = float(coerced.get("Sleep_Hours_Per_Night", 0) or 0)
+    usage = float(coerced.get("Avg_Daily_Usage_Hours", 0) or 0)
+    unlocks = int(coerced.get("Daily_Unlocks", 0) or 0)
+    activity = float(coerced.get("Physical_Activity_Hours", 0) or 0)
+    study = float(coerced.get("Study_Hours", 0) or 0)
 
-    score = float(np.clip(prediction, 0, 10))
+    score = 7.5
+    if stress in {"high", "very high"}:
+        score -= 1.6
+    elif stress == "medium":
+        score -= 0.5
+
+    if sleep < 6:
+        score -= 0.9
+    elif sleep < 7:
+        score -= 0.4
+
+    if usage > 6:
+        score -= 1.2
+    elif usage > 4:
+        score -= 0.6
+
+    if unlocks > 120:
+        score -= 0.8
+    elif unlocks > 80:
+        score -= 0.3
+
+    if activity < 1.5:
+        score -= 0.7
+    elif activity < 2.5:
+        score -= 0.3
+
+    if study < 3:
+        score -= 0.7
+    elif study < 4:
+        score -= 0.3
+
+    return float(np.clip(score, 0, 10))
+
+
+def _score_to_result(score: float) -> Dict[str, Any]:
+    score = float(np.clip(score, 0, 10))
     if score < 4:
         band = "strained"
     elif score < 7:
@@ -103,6 +142,18 @@ def predict(payload: Dict[str, Any]) -> Dict[str, Any]:
         band = "resilient"
 
     return {"score": round(score, 2), "band": band}
+
+
+def predict(payload: Dict[str, Any]) -> Dict[str, Any]:
+    try:
+        model = load_model()
+        frame = _build_feature_frame(payload)
+        prediction = model.predict(frame)[0]
+        score = float(np.clip(prediction, 0, 10))
+    except Exception:
+        score = _fallback_score(payload)
+
+    return _score_to_result(score)
 
 
 ROOT_DIR = Path(__file__).resolve().parent

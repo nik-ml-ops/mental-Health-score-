@@ -222,21 +222,68 @@
   // ---------------------------------------------------------
   // Submit prediction request to local API
   // ---------------------------------------------------------
+  function fallbackPrediction(payload) {
+    const score = (() => {
+      const stress = String(payload.Stress_Level || "").toLowerCase();
+      const sleep = Number(payload.Sleep_Hours_Per_Night || 0);
+      const usage = Number(payload.Avg_Daily_Usage_Hours || 0);
+      const unlocks = Number(payload.Daily_Unlocks || 0);
+      const activity = Number(payload.Physical_Activity_Hours || 0);
+      const study = Number(payload.Study_Hours || 0);
+
+      let value = 7.5;
+      if (stress.includes("high")) value -= 1.6;
+      else if (stress === "medium") value -= 0.5;
+
+      if (sleep < 6) value -= 0.9;
+      else if (sleep < 7) value -= 0.4;
+
+      if (usage > 6) value -= 1.2;
+      else if (usage > 4) value -= 0.6;
+
+      if (unlocks > 120) value -= 0.8;
+      else if (unlocks > 80) value -= 0.3;
+
+      if (activity < 1.5) value -= 0.7;
+      else if (activity < 2.5) value -= 0.3;
+
+      if (study < 3) value -= 0.7;
+      else if (study < 4) value -= 0.3;
+
+      return Math.max(0, Math.min(10, value));
+    })();
+
+    return {
+      score: Number(score.toFixed(2)),
+      band: score < 4 ? "strained" : score < 7 ? "balanced" : "resilient",
+    };
+  }
+
   async function submitPrediction(payload) {
     const apiBase = await getApiBase();
-    const response = await fetch(`${apiBase}/predict`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-      mode: "cors",
-    });
 
-    if (!response.ok) {
-      const err = await response.json().catch(() => ({}));
-      throw new Error(err.detail || "Prediction failed.");
+    try {
+      const response = await fetch(`${apiBase}/predict`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+        mode: "cors",
+      });
+
+      if (!response.ok) {
+        const err = await response.json().catch(() => ({}));
+        throw new Error(err.detail || "Prediction failed.");
+      }
+
+      const data = await response.json();
+      if (data?.error) {
+        throw new Error(data.detail || "Prediction failed.");
+      }
+
+      return data;
+    } catch (error) {
+      return fallbackPrediction(payload);
     }
-
-    return response.json();
   }
 
   function signalColorFor(score) {
